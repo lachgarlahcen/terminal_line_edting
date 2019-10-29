@@ -41,6 +41,8 @@
 # define CH (tgetstr("ch", NULL))
 # define SC (tgetstr("sc", NULL))
 # define RC (tgetstr("rc", NULL))
+# define AL (tgetstr("AL", NULL))
+# define DO (tgetstr("do", NULL))
 # define NORM (tgetstr("me", NULL))
 # define MSG1 (ft_putstr_fd("Error occured\n", 2))
 # define MSG2 (ft_putstr_fd("Not enough room.\n", 2))
@@ -54,16 +56,29 @@ typedef struct		s_line
 	int		cur;
 	int		len;
 	long	key;
+	struct winsize w;
 	struct 	s_point *init_p;
 	struct 	s_point *cur_p;
 	char	chars[BUFF_SIZE];
 }					t_line;
-
+typedef	 struct	s_key
+{
+	long key;
+	void (*f)(t_line *l);
+} 			t_key;
 typedef struct 	s_point
 {
 	int r;
 	int c;
 }				t_point;
+
+void		right_key(t_line *l);
+void		left_key(t_line *l);
+void		esc_key(t_line *l);
+void		delete(t_line *l);
+void		mines(t_point *p, t_line *l);
+void		plus(t_point *p, t_line *l, int b);
+void		default_term_mode(void);
 
 
 #endif
