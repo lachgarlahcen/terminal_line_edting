@@ -6,7 +6,7 @@
 /*   By: llachgar <llachgar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/19 13:13:47 by llachgar          #+#    #+#             */
-/*   Updated: 2019/10/29 16:44:03 by llachgar         ###   ########.fr       */
+/*   Updated: 2019/10/30 21:32:19 by llachgar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,6 @@ void		init_term(void)
 	tcgetattr(STDIN_FILENO, &tattr);
 	tattr.c_lflag &= ~(ICANON | ECHO);
 	tattr.c_oflag &= ~(OPOST);
-	/*tattr.c_cc[VMIN] = 1;
-	tattr.c_cc[VTIME] = 0;*/
 	tcsetattr(STDIN_FILENO, TCSANOW, &tattr);
 }
 void	default_term_mode(void)
@@ -44,6 +42,7 @@ void	default_term_mode(void)
 	tattr.c_oflag |= (OPOST);
 	tcsetattr(STDIN_FILENO, TCSADRAIN, &tattr);
 }
+
 long		read_key(void)
 {
 	long key;
@@ -52,6 +51,7 @@ long		read_key(void)
 	read(0, &key, sizeof(long));
 	return (key);
 }
+
 void sheft(t_line *l)
 {
 	int i;
@@ -64,6 +64,7 @@ void sheft(t_line *l)
 	}
 	l->chars[l->cur] = (int)l->key;
 }
+
 void plus(t_point *p, t_line *l, int b)
 {
 	if (p->c == l->w.ws_col - 1)
@@ -81,6 +82,7 @@ void plus(t_point *p, t_line *l, int b)
 	else
 		p->c++;
 }
+
 void mines(t_point *p, t_line *l)
 {
 	if (p->c > 0)
@@ -94,6 +96,7 @@ void mines(t_point *p, t_line *l)
 	}
 	
 }
+
 void add_at(t_line *l)
 {
 
@@ -137,21 +140,20 @@ t_line			*keep_l(t_line **l)
 
 void print_cmd(t_line *l)
 {
-	t_point *p;
+	t_point p;
 	int i;
 
 	i = -1;
-	p = (t_point *)malloc(sizeof(t_point));
-	p->r = l->init_p->r - 1;
-	p->c = 7; 
+	p.r = l->init_p->r - 1;
+	p.c = 7; 
 	ft_putstr_fd(tgoto(CM,0, l->init_p->r - 1), 0);
 	ft_putstr_fd(CD, 0);
 	ft_putstr_fd("ROOT:#>",0);
 	while (++i < l->len)
 	{
-		ft_putstr_fd(tgoto(CM,p->c, p->r), 0);
+		//ft_putstr_fd(tgoto(CM,p.c, p.r), 0);
 		ft_putchar_fd(l->chars[i], 0);
-		plus(p, l, 1);
+		plus(&p, l, 1);
 	}
 	ft_putstr_fd(tgoto(CM, l->cur_p->c, l->cur_p->r), 0);
 }
@@ -168,16 +170,22 @@ static void		size_change(int s)
 void match_key(t_line *l)
 {
 	int i;
-	t_key keys[5] = 
+	t_key keys[10] = 
 	{
 		{RIGHT_K, &right_key},
 		{LEFT_K , &left_key},
 		{ESC_K, &esc_key},
 		{DEL_K, &delete},
-		{BACK_K, &delete}
+		{BACK_K, &delete},
+		{END_K, &end_k},
+		{HOME_K, &home_k},
+		{INTER_k, &return_k},
+		{CTL_B, &ctl_left},
+		{CTL_F, &ctl_right}
+
 	};
 	i = -1;
-	while (++i < 5)
+	while (++i < 10)
 		if (l->key == keys[i].key)
 			keys[i].f(l);
 }
@@ -187,7 +195,7 @@ int main(int ac, char **av)
 	struct winsize w;
 	
     init_term();
-	//signal(SIGWINCH, size_change);
+	signal(SIGWINCH, size_change);
 	l = (t_line *)malloc(sizeof(t_line));
 	l->init_p = (t_point *)malloc(sizeof(t_point));
 	l->cur_p = (t_point *)malloc(sizeof(t_point));
@@ -203,33 +211,11 @@ int main(int ac, char **av)
     while (1337)
     {
         l->key = read_key();
+		//printf("\n %ld \n",l->key);
 		if (ft_isprint((int)l->key))
-		{
 			add_at(l);
-		}
 		else
 			match_key(l);
-		
-		// if (l->key == LEFT_K && l->cur > 0)
-		// {
-		// 	//ft_putstr_fd(LE,0);
-		// 	l->cur--;
-		// 	mines(l->cur_p, l);
-		// }
-		// if (l->key == RIGHT_K && l->cur < l->len)
-		// {
-		// 	//ft_putstr_fd(ND,0);
-		// 	l->cur++;
-		// 	plus(l->cur_p, l, 0);
-		// }
-		// if (l->key == ESC_K)
-		// {
-		// 	default_term_mode();
-		// 	printf("\n|| <<%s>> <<init R:%d>> <<init C:%d>> ||\n", l->chars,l->init_p->r, l->init_p->c);
-		// 		exit(0);
-		// }
-		// if ((l->key == DEL_K || l->key == BACK_K) && l->cur > 0)
-		// 	delete(l);
 		print_cmd(l);
     }
 }

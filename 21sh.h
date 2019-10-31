@@ -22,6 +22,9 @@
 # define REV_K 5921563
 # define HOME_K 4741915
 # define END_K 4610843
+# define INTER_k 10
+# define CTL_F 6
+# define CTL_B 2
 # define COLS (tgetnum("co"))
 # define ROWS (tgetnum("li"))
 # define SO (tgetstr("so", NULL))
@@ -76,8 +79,13 @@ void		right_key(t_line *l);
 void		left_key(t_line *l);
 void		esc_key(t_line *l);
 void		delete(t_line *l);
+void		home_k(t_line *l);
+void		end_k(t_line *l);
 void		mines(t_point *p, t_line *l);
 void		plus(t_point *p, t_line *l, int b);
+void 		ctl_left(t_line *l);
+void 		return_k(t_line *l);
+void 		ctl_right(t_line *l);
 void		default_term_mode(void);
 
 
