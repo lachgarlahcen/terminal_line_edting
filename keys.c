@@ -6,7 +6,7 @@
 /*   By: llachgar <llachgar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 16:29:11 by llachgar          #+#    #+#             */
-/*   Updated: 2019/10/31 14:59:37 by llachgar         ###   ########.fr       */
+/*   Updated: 2019/11/02 18:08:42 by llachgar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,27 @@ void home_k(t_line *l)
 
 void return_k(t_line *l)
 {
+    if (q_closed(l->chars))
+    {
     default_term_mode();
     printf("\n||%s||\n", l->chars);
     free(l);
     exit(0);
+    }
+    l->prompt = ">";
+    l->cur_p->c = 1;
+    l->cur_p->r++;
+    l->init_p->r = l->cur_p->r + 1;
+    l->init_p->c = 0;
+    l->b_p = l->cur;
+    if (l->cur_p->r == l->w.ws_row)
+    {
+        l->init_p->r--;
+        l->cur_p->r--;
+        ft_putstr_fd(DO, 0);
+        //ioctl(STDOUT_FILENO, TIOCGWINSZ, &(l->w));
+    }
+    
 }
 
 void 		ctl_left(t_line *l)

@@ -8,6 +8,7 @@
 # include <signal.h>
 # include <sys/ioctl.h>
 # include "libft/libft.h"
+# define READ_SIZE 10000
 # define BUFF_SIZE 4096
 # define LEFT_K 4479771
 # define TOP_K 4283163
@@ -53,16 +54,28 @@
 # define ERROR_EXIT {MSG1;exit(0);}
 # define WRONG_SIZE ({MSG2;return;})
 # define NO_ARG {MSG3;exit(0);}
+/*
+**this is a test
+*/
+# define DB_Q(a, b) (a == '\'' && (b % 2) == 0)
+# define S_Q(a, b) (a == '\"' && (b % 2) == 0)
+# define S_S(a) ((a == ' ' || a == '\t'))
+/*
+**this is a test
+*/
 
 typedef struct		s_line
 {
 	int		cur;
 	int		len;
-	long	key;
+	int		key;
+	int		b_p;
 	struct winsize w;
 	struct 	s_point *init_p;
 	struct 	s_point *cur_p;
+	struct s_hist	*hist;
 	char	chars[BUFF_SIZE];
+	char *prompt;
 }					t_line;
 typedef	 struct	s_key
 {
@@ -75,18 +88,34 @@ typedef struct 	s_point
 	int c;
 }				t_point;
 
+typedef	struct	s_hist
+{
+	char *cmd;
+	struct s_hist *next;
+}				t_hist;
+
+typedef	struct	s_tab
+{
+	char *cmd;
+	struct s_tab *next;
+}				t_tab;
+
 void		right_key(t_line *l);
 void		left_key(t_line *l);
 void		esc_key(t_line *l);
 void		delete(t_line *l);
 void		home_k(t_line *l);
 void		end_k(t_line *l);
-void		mines(t_point *p, t_line *l);
+void		sheft(t_line *l);
 void		plus(t_point *p, t_line *l, int b);
+void		mines(t_point *p, t_line *l);
+void 		add_at(t_line *l);
 void 		ctl_left(t_line *l);
 void 		return_k(t_line *l);
 void 		ctl_right(t_line *l);
+void		get_cur_pos(t_point *t);
 void		default_term_mode(void);
+int			q_closed(char *str);
 
 
 #endif
